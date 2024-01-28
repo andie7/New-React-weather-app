@@ -1,11 +1,13 @@
 import React, { useState } from "react";
-import FormattedDate from "./FormattedDate";
+
+import Weatherinfo from "./Weatherinfo";
 import axios from "axios";
 import "./Weather.css";
 
-export default function Weather() {
+export default function Weather(props) {
   const [ready, setReady] = useState(false);
   const [weatherData, setWeatherData] = useState({});
+  const [city, setCity] = useState(props.city);
   function handleResponse(response) {
     console.log(response.data);
     setWeatherData({
@@ -20,10 +22,18 @@ export default function Weather() {
     setReady(true);
   }
 
+  function handleSubmit(event) {
+    event.preventDefault();
+  }
+
+  function handleCityChange(event) {
+    setCity(event.target.value);
+  }
+
   if (ready) {
     return (
       <div className="Weather">
-        <form>
+        <form onSubmit={handleSubmit}>
           <div className="row">
             <div className="col-9">
               <input
@@ -31,6 +41,7 @@ export default function Weather() {
                 placeholder="Enter a city"
                 className="form-control"
                 autoFocus="on"
+                onChange={handleCityChange}
               />
             </div>
             <div className="col-3">
@@ -42,36 +53,7 @@ export default function Weather() {
             </div>
           </div>
         </form>
-
-        <h1>New York</h1>
-        <ul>
-          <li>
-            <FormattedDate date={weatherData.date} />
-          </li>
-          <li>Mostly cloudy</li>
-        </ul>
-        <div className="row">
-          <div className="col-6">
-            <div className="clearfix">
-              <img
-                src={weatherData.iconUrl}
-                alt={weatherData.description}
-                className="float-left"
-              />
-              <div className="float-left"></div>
-              <span className="temperature">
-                {Math.round(weatherData.temperature)}
-              </span>
-              <span className="unit">℃|℉</span>
-            </div>
-          </div>
-        </div>
-        <div className="col-6">
-          <ul>
-            <li>Humidity:{weatherData.humidity}</li>
-            <li>Wind:{weatherData.wind}</li>
-          </ul>
-        </div>
+        <Weatherinfo data={weatherData} />
       </div>
     );
   } else {
